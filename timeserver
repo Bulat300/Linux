@@ -1,15 +1,26 @@
-import socket
-from datetime import datetime
+import socket 
+import datetime 
+ 
 
-HOST = '127.0.0.1' 
-PORT = 8080       
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+ 
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST, PORT))
-    s.listen()
-    while True:
-        conn, addr = s.accept()
-        with conn:
-            print('Connected by', addr)
-            now = datetime.now().strftime("%d.%m.%Y %H:%M")
-            conn.sendall(now.encode())
+server_socket.bind(("0.0.0.0", 1303)) 
+ 
+
+server_socket.listen(5) 
+ 
+try: 
+    while True: 
+        client_socket, client_address = server_socket.accept() 
+        print("Connecting from ", client_address) 
+  
+        current_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M") 
+ 
+        client_socket.send(current_time.encode()) 
+  
+        client_socket.close() 
+except KeyboardInterrupt: 
+    print("Server is stopped") 
+finally: 
+    server_socket.close()
